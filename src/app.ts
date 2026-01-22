@@ -10,6 +10,10 @@ import projectRoutes from "./routes/projects.js";
 
 const app: Application = express();
 
+connectDB().catch((err) => {
+  console.error("Database connection failed:", err);
+});
+
 // Middleware
 app.use(helmet());
 app.use(cors({ origin: config.corsOrigin }));
@@ -35,30 +39,6 @@ app.use((_req, res) => {
   });
 });
 
-// Error handler (must be last)
 app.use(errorHandler);
-
-// Start server
-const startServer = async (): Promise<void> => {
-  try {
-    await connectDB();
-    app.listen(config.port, () => {
-      console.log(`
-╔═══════════════════════════════════════╗
-║           🚀 PROJEKTO SERVER 🚀       ║
-╠═══════════════════════════════════════╣
-║ Server running on port: ${config.port.toString().padEnd(15)}║
-║ Environment: ${config.nodeEnv.padEnd(23)}║
-║ API: http://localhost:${config.port.toString().padEnd(11)}║
-╚═══════════════════════════════════════╝
-      `);
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  }
-};
-
-startServer();
 
 export default app;
